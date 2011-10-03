@@ -41,7 +41,7 @@ import org.alfredlibrary.postalservices.tracking.TrackingNotFoundException;
  * This implementation uses 'web scraping' (http://en.wikipedia.org/wiki/Web_scraping) <br>
  * to get data from http://www.correios.com.br/.<br>
  * 
- * No API is provided by the fucking brazillian Postal Service called Correios  :-(
+ * No API is provided by the brazillian Postal Service called Correios  :-(
  * 
  * @author Marlon Silva Carvalho
  * @since 2.0.0
