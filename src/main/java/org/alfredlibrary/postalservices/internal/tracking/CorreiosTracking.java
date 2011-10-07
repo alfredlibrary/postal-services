@@ -34,15 +34,14 @@ import org.alfredlibrary.postalservices.tracking.NullOrEmptyTrackingCodeExceptio
 import org.alfredlibrary.postalservices.tracking.Status;
 import org.alfredlibrary.postalservices.tracking.Tracking;
 import org.alfredlibrary.postalservices.tracking.TrackingNotFoundException;
+import org.alfredlibrary.postalservices.tracking.annotation.Correios;
 import org.alfredlibrary.text.HTML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default implementation to get tracking informations of packages coming from
- * Brazil.<br>
- * This implementation uses 'web scraping'
- * (http://en.wikipedia.org/wiki/Web_scraping) <br>
+ * Default implementation to get tracking informations of packages coming from Brazil.<br>
+ * This implementation uses 'web scraping' (http://en.wikipedia.org/wiki/Web_scraping) <br>
  * to get data from http://www.correios.com.br/.<br>
  * 
  * No API is provided by the brazillian Postal Service called Correios :-(
@@ -51,6 +50,7 @@ import org.slf4j.LoggerFactory;
  * @since 2.0.0
  */
 @Alternative
+@Correios
 public class CorreiosTracking implements Tracking {
 	private static final long serialVersionUID = 1L;
 	private Logger logger = LoggerFactory.getLogger(CorreiosTracking.class);
