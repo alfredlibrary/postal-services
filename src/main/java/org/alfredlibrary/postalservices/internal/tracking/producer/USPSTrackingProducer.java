@@ -16,24 +16,31 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.alfredlibrary.postalservices.tracking;
+package org.alfredlibrary.postalservices.internal.tracking.producer;
 
-import java.io.Serializable;
+import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.Annotated;
+import javax.enterprise.inject.spi.InjectionPoint;
+
+import org.alfredlibrary.postalservices.internal.tracking.USPSTracking;
+import org.alfredlibrary.postalservices.tracking.Tracking;
+import org.alfredlibrary.postalservices.tracking.annotation.USPS;
 
 /**
- * Defines the common behavior to get tracking informations.
+ * USPS Tracking Producer.
  * 
  * @author Marlon Silva Carvalho
  * @since 2.0.0
  */
-public interface Tracking extends Serializable {
+public class USPSTrackingProducer {
 
-	/**
-	 * Get tracking statuses.
-	 * 
-	 * @param code Tracking code.
-	 * @return Tracking informations.
-	 */
-	TrackingInfo track(String code);
+	@USPS
+	@Produces
+	public Tracking create(InjectionPoint injectionPoint) {
+		Annotated annotated = injectionPoint.getAnnotated();
+		USPS annotation = (USPS) annotated.getAnnotation(USPS.class);
+
+		return new USPSTracking(annotation.userID());
+	}
 
 }
