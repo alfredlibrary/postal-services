@@ -16,30 +16,33 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-package org.alfredlibrary.postalservices.tracking.annotation;
+package org.alfredlibrary.postalservices.internal.tracking;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.List;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.enterprise.inject.Alternative;
 
-import javax.inject.Qualifier;
-
+import org.alfredlibrary.postalservices.tracking.Status;
 import org.alfredlibrary.postalservices.tracking.Tracking;
+import org.alfredlibrary.postalservices.tracking.annotation.USPS;
 
 /**
- * CDI qualifier. Use it to inform that you want to inject an instance of {@link Tracking} that
- * will tracking postal codes sent from Correios service.
+ * Default implementation to get tracking informations of packages coming from
+ * United States.<br>
+ * 
+ * This implementation uses the Webtools API from USPS.
  * 
  * @author Marlon Silva Carvalho
  * @since 2.0.0
  */
-@Documented
-@Target({ TYPE })
-@Retention(RUNTIME)
-@Qualifier
-public @interface Correios {
+@Alternative
+@USPS
+public class USPSTracking implements Tracking {
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public List<Status> track(String code) {
+		return null;
+	}
 
 }
