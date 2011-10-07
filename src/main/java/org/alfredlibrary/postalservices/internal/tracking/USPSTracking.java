@@ -43,13 +43,16 @@ public class USPSTracking implements Tracking {
 	private String url = "http://testing.shippingapis.com/ShippingAPITest.dll";
 	private String userID;
 
+	public USPSTracking() {
+	}
+
 	public USPSTracking(String userID) {
-		this.userID = userID;
+		this.setUserID(userID);
 	}
 
 	@Override
 	public TrackingInfo track(String code) {
-		String mountedUrl = url + "?API=TrackV2&XML=%3CTrackRequest%20USERID=%22" + userID + "%22%3E%3CTrackID%20ID=%" + code
+		String mountedUrl = url + "?API=TrackV2&XML=%3CTrackRequest%20USERID=%22" + getUserID() + "%22%3E%3CTrackID%20ID=%" + code
 				+ "%22%3E%3C/TrackID%3E%3C/TrackRequest%3E";
 		String content = WWW.getContent(mountedUrl, "UTF-8");
 
@@ -82,6 +85,14 @@ public class USPSTracking implements Tracking {
 		}
 
 		return info;
+	}
+
+	public void setUserID(String userID) {
+		this.userID = userID;
+	}
+
+	public String getUserID() {
+		return userID;
 	}
 
 }
