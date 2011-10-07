@@ -55,13 +55,6 @@ public class CorreiosTracking implements Tracking {
 	private static final long serialVersionUID = 1L;
 	private Logger logger = LoggerFactory.getLogger(CorreiosTracking.class);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.alfredlibrary.postalservices.tracking.Tracking#track(java.lang.String
-	 * )
-	 */
 	@Override
 	public List<Status> track(String code) {
 		logger.debug("starting tracking of the code " + code);
@@ -106,8 +99,7 @@ public class CorreiosTracking implements Tracking {
 	/**
 	 * Create the tracking status.
 	 * 
-	 * @param line
-	 *            Text containing the status details.
+	 * @param line Text containing the status details.
 	 * @return Status.
 	 */
 	private Status createStatus(String line) {
@@ -131,8 +123,7 @@ public class CorreiosTracking implements Tracking {
 	/**
 	 * Extract tracking details from the string.
 	 * 
-	 * @param line
-	 *            Text containing the details.
+	 * @param line Text containing the details.
 	 */
 	private void setDetails(Status status, String line) {
 		logger.debug("finding details from text: " + line);
@@ -140,11 +131,16 @@ public class CorreiosTracking implements Tracking {
 		status.setDetails(line.substring(indexLine, line.indexOf("</td></tr>", indexLine)));
 	}
 
+	/**
+	 * Validating the code.
+	 * 
+	 * @param code Code.
+	 */
 	private void validate(String code) {
 		logger.debug("validating code " + code);
-		
+
 		TrackingValidator validator = new TrackingValidator();
-		
+
 		if (code == null) {
 			throw new NullOrEmptyTrackingCodeException();
 		} else if ("".equals(code)) {
