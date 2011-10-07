@@ -18,22 +18,32 @@
  */
 package org.alfredlibrary.postalservices.tracking;
 
-import java.io.Serializable;
+import java.util.List;
 
 /**
- * Defines the common behavior to get tracking informations.
+ * Contains all tracking informations like summary and all details.
  * 
  * @author Marlon Silva Carvalho
  * @since 2.0.0
  */
-public interface Tracking extends Serializable {
+public class TrackingInfo {
+	private String summary;
+	private List<Status> statuses;
 
-	/**
-	 * Get tracking statuses.
-	 * 
-	 * @param code Tracking code.
-	 * @return Tracking informations.
-	 */
-	TrackingInfo track(String code);
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setStatuses(List<Status> statuses) {
+		this.statuses = statuses;
+	}
+
+	public List<Status> getStatuses() {
+		return statuses;
+	}
 
 }

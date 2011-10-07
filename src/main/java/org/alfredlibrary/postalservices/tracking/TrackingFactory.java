@@ -19,6 +19,7 @@
 package org.alfredlibrary.postalservices.tracking;
 
 import org.alfredlibrary.postalservices.internal.tracking.CorreiosTracking;
+import org.alfredlibrary.postalservices.internal.tracking.USPSTracking;
 
 /**
  * Create instances of {@link Tracking}. <br>
@@ -30,11 +31,13 @@ import org.alfredlibrary.postalservices.internal.tracking.CorreiosTracking;
  */
 final public class TrackingFactory {
 
-	public static Tracking getInstance(TrackingServices services) {
+	public static Tracking getInstance(TrackingServices services, String... params) {
 		Tracking tracking = null;
 
 		if (services == TrackingServices.CORREIOS) {
 			tracking = new CorreiosTracking();
+		} else if (services == TrackingServices.USPS) {
+			tracking = new USPSTracking(params[0]);
 		}
 
 		return tracking;

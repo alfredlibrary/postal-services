@@ -18,12 +18,11 @@
  */
 package org.alfredlibrary.postalservices.internal.tracking;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.enterprise.inject.Alternative;
 
@@ -33,9 +32,9 @@ import org.alfredlibrary.postalservices.tracking.IncorrectTrackingCodeException;
 import org.alfredlibrary.postalservices.tracking.NullOrEmptyTrackingCodeException;
 import org.alfredlibrary.postalservices.tracking.Status;
 import org.alfredlibrary.postalservices.tracking.Tracking;
+import org.alfredlibrary.postalservices.tracking.TrackingInfo;
 import org.alfredlibrary.postalservices.tracking.TrackingNotFoundException;
 import org.alfredlibrary.postalservices.tracking.annotation.Correios;
-import org.alfredlibrary.text.HTML;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,79 +55,68 @@ public class CorreiosTracking implements Tracking {
 	private Logger logger = LoggerFactory.getLogger(CorreiosTracking.class);
 
 	@Override
-	public List<Status> track(String code) {
+	public TrackingInfo track(String code) {
 		logger.debug("starting tracking of the code " + code);
 
 		validate(code);
 
 		logger.debug("asking Correios about the code.");
-		String content = WWW.getContent("http://websro.correios.com.br/sro_bin/txect01$.QueryList?P_LINGUA=001&P_TIPO=001&P_COD_UNI=" + code, "ISO-8859-1");
-
-		BufferedReader bufferedReader = new BufferedReader(new StringReader(content));
-		String line = null;
-
-		List<Status> listStatuses = new ArrayList<Status>();
+		String content = WWW.getContent("http://websro.correios.com.br/sro_bin/txect01$.QueryList?P_LINGUA=001&P_TIPO=001&P_COD_UNI=" + code, "UTF-8");
 
 		if (content.indexOf("O nosso sistema não possui dados sobre o objeto") > -1) {
 			logger.info("tracking code " + code + " not found at Correios.");
 			throw new TrackingNotFoundException();
 		}
 
+		TrackingInfo info = new TrackingInfo();
+		List<Status> listStatuses = new ArrayList<Status>();
+		info.setStatuses(listStatuses);
+
 		try {
-			while ((line = bufferedReader.readLine()) != null) {
-				line = HTML.decodeSpecialHTMLEntities(line, 0);
-				if (line.indexOf("<tr><td ") > -1) {
-					if (line.indexOf("rowspan=1") > -1) {
-						listStatuses.add(createStatus(line));
-					} else if (line.indexOf("rowspan=2") > -1 || line.indexOf("rowspan=3") > -1) {
-						Status status = createStatus(line);
-						line = bufferedReader.readLine();
-						setDetails(status, line);
-						listStatuses.add(status);
-						logger.debug("status found: " + status.getDescription() + ", " + status.getDetails() + ", " + status.getLocation());
-					}
-				}
+			String dateRegex = "[0-9][0-o]/[0-9][0-9]/[0-9][0-9][0-9][0-9]";
+			String timeRegex = "[0-9][0-9]:[0-9][0-9]";
+			String regex = "(rowspan=[12].(" + dateRegex + " " + timeRegex + ")</td><td>(.*)?</td><.*>(.*)</font></td.*(\\n.*colspan=2>(.*)</td>)?)";
+			Matcher matcher = Pattern.compile(regex).matcher(content);
+			while (matcher.find()) {
+				listStatuses.add(createStatus(matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(6)));
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.error("error tracking the code " + code, e);
 			throw new RuntimeException(e);
 		}
-		return listStatuses;
+
+		return info;
 	}
 
 	/**
-	 * Create the tracking status.
+	 * Creating Status.
 	 * 
-	 * @param line Text containing the status details.
+	 * @param date Date.
+	 * @param location Location.
+	 * @param description Description.
+	 * @param details Details.
 	 * @return Status.
 	 */
-	private Status createStatus(String line) {
-		logger.debug("creating status from text: " + line);
+	private Status createStatus(String date, String location, String description, String details) {
+		logger.debug("creating status");
 
-		int indexLine = line.indexOf("rowspan=") + 10;
 		Status status = new Status();
 		try {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-			status.setDate(simpleDateFormat.parse(line.substring(indexLine, line.indexOf("</td><td>", indexLine) + 1)));
+			status.setDate(simpleDateFormat.parse(date));
 		} catch (Exception exception) {
 
 		}
-		indexLine = line.indexOf("</td><td>", indexLine) + 9;
-		status.setLocation(line.substring(indexLine, line.indexOf("</td><td>", indexLine)));
-		indexLine = line.indexOf("</td><td>", indexLine) + 30;
-		status.setDescription(line.substring(indexLine, line.indexOf("</font></td></tr>", indexLine)));
+		if (location != null) {
+			status.setLocation(location.trim());
+		}
+		if (description != null) {
+			status.setDescription(description.trim());
+		}
+		if (details != null) {
+			status.setDetails(details.trim());
+		}
 		return status;
-	}
-
-	/**
-	 * Extract tracking details from the string.
-	 * 
-	 * @param line Text containing the details.
-	 */
-	private void setDetails(Status status, String line) {
-		logger.debug("finding details from text: " + line);
-		int indexLine = line.indexOf("colspan=") + 10;
-		status.setDetails(line.substring(indexLine, line.indexOf("</td></tr>", indexLine)));
 	}
 
 	/**

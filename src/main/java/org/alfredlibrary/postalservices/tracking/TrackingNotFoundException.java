@@ -27,4 +27,20 @@ package org.alfredlibrary.postalservices.tracking;
 public class TrackingNotFoundException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
+	public TrackingNotFoundException() {
+		super();
+	}
+
+	public TrackingNotFoundException(String message, Throwable exception) {
+		super(message, exception);
+	}
+
+	public TrackingNotFoundException(String message) {
+		super(message);
+	}
+
+	public TrackingNotFoundException(Throwable exception) {
+		super(exception);
+	}
+
 }

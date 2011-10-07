@@ -18,6 +18,7 @@
  */
 package org.alfredlibrary.postalservices.tracking.annotation;
 
+import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -37,9 +38,11 @@ import org.alfredlibrary.postalservices.tracking.Tracking;
  * @since 2.0.0
  */
 @Documented
-@Target({ TYPE })
+@Target({ TYPE, METHOD })
 @Retention(RUNTIME)
 @Qualifier
 public @interface USPS {
+
+	String userID() default "";
 
 }
