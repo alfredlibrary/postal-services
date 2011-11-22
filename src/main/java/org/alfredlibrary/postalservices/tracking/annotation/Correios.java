@@ -19,6 +19,7 @@
 package org.alfredlibrary.postalservices.tracking.annotation;
 
 import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
@@ -30,14 +31,14 @@ import javax.inject.Qualifier;
 import org.alfredlibrary.postalservices.tracking.Tracking;
 
 /**
- * CDI qualifier. Use it to inform that you want to inject an instance of {@link Tracking} that
- * will tracking postal codes sent from Correios service.
+ * CDI qualifier. Use it to inform that you want to inject an instance of
+ * {@link Tracking} that will tracking postal codes sent from Correios service.
  * 
  * @author Marlon Silva Carvalho
  * @since 2.0.0
  */
 @Documented
-@Target({ TYPE })
+@Target({ TYPE, METHOD })
 @Retention(RUNTIME)
 @Qualifier
 public @interface Correios {
