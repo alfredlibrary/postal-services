@@ -18,14 +18,11 @@
  */
 package org.alfredlibrary.postalservices.internal.tracking;
 
-import javax.enterprise.inject.Alternative;
-
 import org.alfredlibrary.network.WWW;
 import org.alfredlibrary.postalservices.tracking.Status;
 import org.alfredlibrary.postalservices.tracking.Tracking;
 import org.alfredlibrary.postalservices.tracking.TrackingInfo;
 import org.alfredlibrary.postalservices.tracking.TrackingNotFoundException;
-import org.alfredlibrary.postalservices.tracking.annotation.USPS;
 
 /**
  * Default implementation to get tracking informations of packages coming from
@@ -36,8 +33,6 @@ import org.alfredlibrary.postalservices.tracking.annotation.USPS;
  * @author Marlon Silva Carvalho
  * @since 2.0.0
  */
-@Alternative
-@USPS
 public class USPSTracking implements Tracking {
 	private static final long serialVersionUID = 1L;
 	private String url = "http://testing.shippingapis.com/ShippingAPITest.dll";
