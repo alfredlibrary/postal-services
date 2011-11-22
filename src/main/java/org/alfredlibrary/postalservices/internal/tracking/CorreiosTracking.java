@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.enterprise.inject.Alternative;
-
 import org.alfredlibrary.network.WWW;
 import org.alfredlibrary.postalservices.internal.tracking.validation.TrackingValidator;
 import org.alfredlibrary.postalservices.tracking.IncorrectTrackingCodeException;
@@ -34,7 +32,6 @@ import org.alfredlibrary.postalservices.tracking.Status;
 import org.alfredlibrary.postalservices.tracking.Tracking;
 import org.alfredlibrary.postalservices.tracking.TrackingInfo;
 import org.alfredlibrary.postalservices.tracking.TrackingNotFoundException;
-import org.alfredlibrary.postalservices.tracking.annotation.Correios;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +45,6 @@ import org.slf4j.LoggerFactory;
  * @author Marlon Silva Carvalho
  * @since 2.0.0
  */
-@Alternative
-@Correios
 public class CorreiosTracking implements Tracking {
 	private static final long serialVersionUID = 1L;
 	private Logger logger = LoggerFactory.getLogger(CorreiosTracking.class);
