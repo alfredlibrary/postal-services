@@ -37,7 +37,7 @@
 			<artifactId>validation-api</artifactId>
 			<version>1.0.0.GA</version>
 			<type>jar</type>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
