@@ -103,7 +103,8 @@ public class CorreiosTracking implements Tracking {
 
 		}
 		if (location != null) {
-			status.setLocation(location.trim());
+			status.setCity(location.trim());
+			status.setState(location.trim());
 		}
 		if (description != null) {
 			status.setDescription(description.trim());
