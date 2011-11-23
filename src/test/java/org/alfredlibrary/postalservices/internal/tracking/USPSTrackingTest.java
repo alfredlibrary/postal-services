@@ -1,7 +1,6 @@
 package org.alfredlibrary.postalservices.internal.tracking;
 
 import org.alfredlibrary.postalservices.tracking.TrackingFactory;
-import org.alfredlibrary.postalservices.tracking.TrackingServices;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,7 +16,7 @@ public class USPSTrackingTest {
 
 	@Before
 	public void before() {
-		tracking = (USPSTracking) TrackingFactory.getInstance(TrackingServices.USPS, "146SERPR6292");
+		tracking = (USPSTracking) TrackingFactory.getUSPS("146SERPR6292", true);
 	}
 
 	@Test

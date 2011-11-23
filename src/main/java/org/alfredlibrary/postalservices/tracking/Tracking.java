@@ -34,6 +34,6 @@ public interface Tracking extends Serializable {
 	 * @param code Tracking code.
 	 * @return Tracking informations.
 	 */
-	TrackingInfo track(String code);
+	TrackingInfo track(final String code);
 
 }

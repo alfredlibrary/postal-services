@@ -20,12 +20,12 @@ package org.alfredlibrary.postalservices.internal.tracking;
 
 import junit.framework.Assert;
 
-import org.alfredlibrary.postalservices.tracking.IncorrectTrackingCodeException;
-import org.alfredlibrary.postalservices.tracking.NullOrEmptyTrackingCodeException;
 import org.alfredlibrary.postalservices.tracking.Tracking;
 import org.alfredlibrary.postalservices.tracking.TrackingFactory;
 import org.alfredlibrary.postalservices.tracking.TrackingInfo;
-import org.alfredlibrary.postalservices.tracking.TrackingServices;
+import org.alfredlibrary.postalservices.tracking.exception.IncorrectTrackingCodeException;
+import org.alfredlibrary.postalservices.tracking.exception.NullOrEmptyTrackingCodeException;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -36,27 +36,30 @@ import org.junit.Test;
  */
 public class CorreiosTrackingTest {
 
+	private Tracking tracking;
+	
+	@Before
+	public void before() {
+		tracking = TrackingFactory.getCorreios();
+	}
+	
 	@Test(expected = IncorrectTrackingCodeException.class)
 	public void testIncorrectCode() {
-		Tracking tracking = TrackingFactory.getInstance(TrackingServices.CORREIOS);
 		tracking.track("PB4");
 	}
 
 	@Test(expected = NullOrEmptyTrackingCodeException.class)
 	public void testFailWithNullCode() {
-		Tracking tracking = TrackingFactory.getInstance(TrackingServices.CORREIOS);
 		tracking.track(null);
 	}
 
 	@Test(expected = NullOrEmptyTrackingCodeException.class)
 	public void testFailWithEmptyCode() {
-		Tracking tracking = TrackingFactory.getInstance(TrackingServices.CORREIOS);
 		tracking.track("");
 	}
 
 	@Test
 	public void testSuccessCode() {
-		Tracking tracking = TrackingFactory.getInstance(TrackingServices.CORREIOS);
 		TrackingInfo info = tracking.track("RM050887654IN");
 		Assert.assertEquals("AC CONCHAS - CONCHAS/SP", info.getStatuses().get(0).getCity());
 		Assert.assertEquals("Entregue", info.getStatuses().get(0).getDescription());
