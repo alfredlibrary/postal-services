@@ -18,17 +18,23 @@
  */
 package org.alfredlibrary.postalservices.internal.tracking;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import org.alfredlibrary.network.WWW;
 import org.alfredlibrary.postalservices.tracking.Status;
 import org.alfredlibrary.postalservices.tracking.Tracking;
 import org.alfredlibrary.postalservices.tracking.TrackingInfo;
-import org.alfredlibrary.postalservices.tracking.TrackingNotFoundException;
+import org.alfredlibrary.postalservices.tracking.exception.TrackingException;
+import org.alfredlibrary.postalservices.tracking.exception.TrackingNotFoundException;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -38,7 +44,7 @@ import org.simpleframework.xml.core.Persister;
 
 /**
  * Default implementation to get tracking informations of packages coming from
- * United States Postal Service.<br>
+ * United States Postal Service (USPS).<br>
  * 
  * This implementation uses the Webtools API from USPS.
  * 
@@ -47,38 +53,70 @@ import org.simpleframework.xml.core.Persister;
  */
 public class USPSTracking implements Tracking {
 	private static final long serialVersionUID = 1L;
-	private String url = "http://testing.shippingapis.com/ShippingAPITest.dll";
+	private String productionURL;
+	private String testURL;
 	private String userID;
+	private boolean test = false;
 
-	public USPSTracking() {
+	public USPSTracking(final String userID) {
+		this(userID, false);
 	}
 
-	public USPSTracking(String userID) {
-		this.setUserID(userID);
+	public USPSTracking(final String userID, final boolean test) {
+		this.userID = userID;
+		this.test = test;
+		getURLsFromPropertiesFile();
+	}
+
+	private void getURLsFromPropertiesFile() {
+		Properties properties = new Properties();
+		try {
+			InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("alfred.properties");
+			properties.load(inputStream);
+			productionURL = properties.getProperty("usps.production.url");
+			testURL = properties.getProperty("usps.test.url");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void validateURLs() {
+		if (test && (testURL == null || "".equals(testURL))) {
+			throw new TrackingException("To use USPS Test Servers, you must create 'alfred.properties' file and add this key: usps.test.url");
+		} else if (!test && (productionURL == null || "".equals(productionURL))) {
+			throw new TrackingException("To use USPS Production Servers, you must create 'alfred.properties' file and add this key: usps.production.url");
+		}
 	}
 
 	@Override
 	public TrackingInfo track(String code) {
+		validateURLs();
+
 		String mountedUrl = "";
 		try {
-			mountedUrl = url + "?API=TrackV2&XML="
-					+ URLEncoder.encode("<TrackFieldRequest USERID='" + userID + "'><TrackID ID='" + code + "'></TrackID></TrackFieldRequest>", "UTF-8");
+			final String encodedURL = URLEncoder.encode("<TrackFieldRequest USERID='" + userID + "'><TrackID ID='" + code + "'></TrackID></TrackFieldRequest>",
+					"UTF-8");
+			mountedUrl = (test ? testURL : productionURL) + "?API=TrackV2&XML=" + encodedURL;
 		} catch (UnsupportedEncodingException e) {
-			throw new TrackingNotFoundException();
-		}
-		String content = WWW.getContent(mountedUrl, "UTF-8");
-		if (content.indexOf("<Error>") > -1) {
-			int index1 = content.indexOf("<Description>") + 13;
-			int index2 = content.indexOf("</Description>");
-			throw new TrackingNotFoundException(content.substring(index1, index2 - index1));
+			throw new TrackingException(e);
 		}
 
-		TrackingInfo info = new TrackingInfo();
-		Serializer serializer = new Persister();
+		final String content = WWW.getContent(mountedUrl, "UTF-8");
+		checkExists(content);
+
+		return new TrackingInfo(getStatuses(content));
+	}
+
+	private List<Status> getStatuses(final String content) {
+		List<Status> statuses = new ArrayList<Status>();
+
 		try {
-			TrackResponse trackingResponse = serializer.read(TrackResponse.class, content);
-			for (TrackDetail detail : trackingResponse.getTrackInfo().getTrackDetails()) {
-				Status status = new Status();
+			final Serializer serializer = new Persister();
+			final TrackResponse trackingResponse = serializer.read(TrackResponse.class, content);
+			for (final TrackDetail detail : trackingResponse.getTrackInfo().getTrackDetails()) {
+				final Status status = new Status();
 				status.setDescription(detail.getEvent());
 				status.setCity(detail.getEventCity());
 				status.setState(detail.getEventState());
@@ -86,17 +124,27 @@ public class USPSTracking implements Tracking {
 				status.setZipCode(detail.getEventZIPCode());
 				status.setDetails("");
 
-				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa", Locale.US);
+				final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa", Locale.US);
 				status.setDate(simpleDateFormat.parse(detail.getEventDate() + " " + detail.getEventTime()));
+
+				statuses.add(status);
 			}
 		} catch (Exception e) {
-			throw new TrackingNotFoundException();
+			throw new TrackingException(e);
 		}
 
-		return info;
+		return statuses;
 	}
 
-	public void setUserID(String userID) {
+	private void checkExists(final String content) {
+		if (content.indexOf("<Error>") > -1) {
+			int index1 = content.indexOf("<Description>") + 13;
+			int index2 = content.indexOf("</Description>");
+			throw new TrackingNotFoundException(content.substring(index1, index2 - index1));
+		}
+	}
+
+	public void setUserID(final String userID) {
 		this.userID = userID;
 	}
 
@@ -113,7 +161,7 @@ public class USPSTracking implements Tracking {
  * @since 2.0.0
  */
 @Root(name = "TrackResponse")
-class TrackResponse {
+final class TrackResponse {
 
 	@Element(name = "TrackInfo")
 	private TrackInfo trackInfo;
@@ -135,7 +183,7 @@ class TrackResponse {
  * @since 2.0.0
  */
 @Root(name = "TrackDetail")
-class TrackDetail extends TrackSummary {
+final class TrackDetail extends TrackSummary {
 }
 
 /**
@@ -263,7 +311,7 @@ class TrackSummary {
  * @author Marlon
  * @since 2.0.0
  */
-class TrackInfo {
+final class TrackInfo {
 
 	@Attribute
 	private String ID;

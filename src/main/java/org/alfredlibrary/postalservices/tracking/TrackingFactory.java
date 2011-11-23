@@ -31,16 +31,24 @@ import org.alfredlibrary.postalservices.internal.tracking.USPSTracking;
  */
 final public class TrackingFactory {
 
-	public static Tracking getInstance(TrackingServices services, String... params) {
-		Tracking tracking = null;
+	/**
+	 * Get an instance of @{link Tracking} to work with USPS trackings.
+	 * 
+	 * @param userID Your USPS user identification.
+	 * @param test Are you testing your application or using in production environment?
+	 * @return Instance of {@link Tracking} to track packages sent from USPS.
+	 */
+	public static USPSTracking getUSPS(final String userID, final boolean test) {
+		return new USPSTracking(userID, test);
+	}
 
-		if (services == TrackingServices.CORREIOS) {
-			tracking = new CorreiosTracking();
-		} else if (services == TrackingServices.USPS) {
-			tracking = new USPSTracking(params[0]);
-		}
-
-		return tracking;
+	/**
+	 * Get an instance of @{link Tracking} to work with Brazilian Postal Services tracking.
+	 * 
+	 * @return Instance of @{link Tracking} to track packages sent from Correios. 
+	 */
+	public static CorreiosTracking getCorreios() {
+		return new CorreiosTracking();
 	}
 
 }

@@ -30,6 +30,14 @@ public class TrackingInfo {
 	private String summary;
 	private List<Status> statuses;
 
+	public TrackingInfo() {
+		
+	}
+	
+	public TrackingInfo(List<Status> statuses) {
+		this.statuses = statuses;
+	}
+
 	public void setSummary(String summary) {
 		this.summary = summary;
 	}
