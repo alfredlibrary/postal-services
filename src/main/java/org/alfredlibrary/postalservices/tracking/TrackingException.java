@@ -19,13 +19,28 @@
 package org.alfredlibrary.postalservices.tracking;
 
 /**
- * Tracking Code can't be null ou empty.
+ * Generic Tracking Exception.
  * 
  * @author Marlon Silva Carvalho
  * @since 2.0.0
  */
-public class NullOrEmptyTrackingCodeException extends TrackingException {
-
+public class TrackingException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
+
+	public TrackingException() {
+		super();
+	}
+
+	public TrackingException(String arg0, Throwable arg1) {
+		super(arg0, arg1);
+	}
+
+	public TrackingException(String arg0) {
+		super(arg0);
+	}
+
+	public TrackingException(Throwable arg0) {
+		super(arg0);
+	}
 
 }

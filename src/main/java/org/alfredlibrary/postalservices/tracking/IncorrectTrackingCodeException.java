@@ -24,7 +24,7 @@ package org.alfredlibrary.postalservices.tracking;
  * @author Marlon Silva Carvalho 
  * @since 2.0.
  */
-public class IncorrectTrackingCodeException extends RuntimeException {
+public class IncorrectTrackingCodeException extends TrackingException {
 
 	private static final long serialVersionUID = 1L;
 
