@@ -30,6 +30,7 @@ import org.alfredlibrary.postalservices.tracking.IncorrectTrackingCodeException;
 import org.alfredlibrary.postalservices.tracking.NullOrEmptyTrackingCodeException;
 import org.alfredlibrary.postalservices.tracking.Status;
 import org.alfredlibrary.postalservices.tracking.Tracking;
+import org.alfredlibrary.postalservices.tracking.TrackingException;
 import org.alfredlibrary.postalservices.tracking.TrackingInfo;
 import org.alfredlibrary.postalservices.tracking.TrackingNotFoundException;
 import org.slf4j.Logger;
@@ -50,22 +51,27 @@ public class CorreiosTracking implements Tracking {
 	private Logger logger = LoggerFactory.getLogger(CorreiosTracking.class);
 
 	@Override
-	public TrackingInfo track(String code) {
+	public TrackingInfo track(final String code) {
+
 		logger.debug("starting tracking of the code " + code);
-
 		validate(code);
-
 		logger.debug("asking Correios about the code.");
-		String content = WWW.getContent("http://websro.correios.com.br/sro_bin/txect01$.QueryList?P_LINGUA=001&P_TIPO=001&P_COD_UNI=" + code, "UTF-8");
 
+		final String content = WWW.getContent("http://websro.correios.com.br/sro_bin/txect01$.QueryList?P_LINGUA=001&P_TIPO=001&P_COD_UNI=" + code, "UTF-8");
+		checkExists(code, content);
+
+		return new TrackingInfo(getStatuses(code, content));
+	}
+
+	private void checkExists(final String code, final String content) {
 		if (content.indexOf("O nosso sistema não possui dados sobre o objeto") > -1) {
 			logger.info("tracking code " + code + " not found at Correios.");
 			throw new TrackingNotFoundException();
 		}
+	}
 
-		TrackingInfo info = new TrackingInfo();
+	private List<Status> getStatuses(final String code, final String content) {
 		List<Status> listStatuses = new ArrayList<Status>();
-		info.setStatuses(listStatuses);
 
 		try {
 			String dateRegex = "[0-9][0-o]/[0-9][0-9]/[0-9][0-9][0-9][0-9]";
@@ -77,10 +83,10 @@ public class CorreiosTracking implements Tracking {
 			}
 		} catch (Exception e) {
 			logger.error("error tracking the code " + code, e);
-			throw new RuntimeException(e);
+			throw new TrackingException(e);
 		}
 
-		return info;
+		return listStatuses;
 	}
 
 	/**
