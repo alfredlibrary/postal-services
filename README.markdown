@@ -7,29 +7,29 @@ Usage
 ------
 Postal Services API is integrated with Brazilian Postal Services (Correios) and United States Postal Service (USPS). How to use it? It's simple like that:
 
-public class MyClass {
-	
-	private Tracking tracking;
-	
-	public void testing() {
-		tracking = TrackingFactory.getUSPS("myID", false);
-		TrackingInfo info = tracking.track("CODE");
+	public class MyClass {
+		
+		private Tracking tracking;
+		
+		public void testing() {
+			tracking = TrackingFactory.getUSPS("myID", false);
+			TrackingInfo info = tracking.track("CODE");
+		}
+		
 	}
-	
-}
 
 With this code, you will be tracking an package sent from USPS. If you are in Brazil, you need a few changes in the code above:
 
-public class MyClass {
+	public class MyClass {
 	
-	private Tracking tracking;
+		private Tracking tracking;
 	
-	public void testing() {
-		tracking = TrackingFactory.getCorreios();
-		TrackingInfo info = tracking.track("CODE");
+		public void testing() {
+			tracking = TrackingFactory.getCorreios();
+			TrackingInfo info = tracking.track("CODE");
+		}
+		
 	}
-	
-}
 
 Easy!
 
