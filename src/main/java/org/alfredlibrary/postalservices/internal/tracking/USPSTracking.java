@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.ResourceBundle;
 
 import org.alfredlibrary.network.WWW;
 import org.alfredlibrary.postalservices.tracking.Status;
@@ -57,6 +58,7 @@ public class USPSTracking implements Tracking {
 	private String testURL;
 	private String userID;
 	private boolean test = false;
+	private ResourceBundle bundle;
 
 	public USPSTracking(final String userID) {
 		this(userID, false);
@@ -66,6 +68,11 @@ public class USPSTracking implements Tracking {
 		this.userID = userID;
 		this.test = test;
 		getURLsFromPropertiesFile();
+		getResourceBundle();
+	}
+
+	private void getResourceBundle() {
+		bundle = ResourceBundle.getBundle("messages");
 	}
 
 	private void getURLsFromPropertiesFile() {
@@ -84,9 +91,9 @@ public class USPSTracking implements Tracking {
 
 	private void validateURLs() {
 		if (test && (testURL == null || "".equals(testURL))) {
-			throw new TrackingException("To use USPS Test Servers, you must create 'alfred.properties' file and add this key: usps.test.url");
+			throw new TrackingException(bundle.getString("usps.test.server.not.defined"));
 		} else if (!test && (productionURL == null || "".equals(productionURL))) {
-			throw new TrackingException("To use USPS Production Servers, you must create 'alfred.properties' file and add this key: usps.production.url");
+			throw new TrackingException(bundle.getString("usps.production.server.not.defined"));
 		}
 	}
 
