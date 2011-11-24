@@ -21,7 +21,7 @@ package org.alfredlibrary.postalservices.tracking;
 import java.io.Serializable;
 
 /**
- * Defines the common behavior to get tracking informations.
+ * Get tracking informations about your packages. <br/>
  * 
  * @author Marlon Silva Carvalho
  * @since 2.0.0
