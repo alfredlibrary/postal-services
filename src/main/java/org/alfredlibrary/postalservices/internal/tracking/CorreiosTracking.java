@@ -25,7 +25,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.alfredlibrary.network.WWW;
-import org.alfredlibrary.postalservices.internal.tracking.validation.TrackingValidator;
 import org.alfredlibrary.postalservices.tracking.Status;
 import org.alfredlibrary.postalservices.tracking.Tracking;
 import org.alfredlibrary.postalservices.tracking.TrackingInfo;
@@ -33,6 +32,7 @@ import org.alfredlibrary.postalservices.tracking.exception.IncorrectTrackingCode
 import org.alfredlibrary.postalservices.tracking.exception.NullOrEmptyTrackingCodeException;
 import org.alfredlibrary.postalservices.tracking.exception.TrackingException;
 import org.alfredlibrary.postalservices.tracking.exception.TrackingNotFoundException;
+import org.alfredlibrary.validation.internal.validator.TrackingValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
