@@ -19,7 +19,7 @@
 package org.alfredlibrary.postalservices.tracking.exception;
 
 /**
- * When no tracking status is found.
+ * When no tracking status was found.
  * 
  * @author Marlon Silva Carvalho
  * @since 2.0.0
