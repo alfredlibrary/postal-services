@@ -23,6 +23,7 @@ import org.alfredlibrary.postalservices.internal.tracking.USPSTracking;
 
 /**
  * Create instances of {@link Tracking}. <br>
+ * 
  * If you don't use CDI, then use this factory to get instances of {@link Tracking}.<br>
  * If you're using CDI, then use the @Inject and our qualifiers (@USPS, @Correios and so on).
  * 
@@ -31,8 +32,11 @@ import org.alfredlibrary.postalservices.internal.tracking.USPSTracking;
  */
 final public class TrackingFactory {
 
+	private TrackingFactory() {
+	}
+
 	/**
-	 * Get an instance of @{link Tracking} to work with USPS trackings.
+	 * Get an instance of @{link Tracking} to work with USPS.
 	 * 
 	 * @param userID Your USPS user identification.
 	 * @param test Are you testing your application or using in production environment?
@@ -43,7 +47,7 @@ final public class TrackingFactory {
 	}
 
 	/**
-	 * Get an instance of @{link Tracking} to work with Brazilian Postal Services tracking.
+	 * Get an instance of @{link Tracking} to work with Brazilian Postal Services.
 	 * 
 	 * @return Instance of @{link Tracking} to track packages sent from Correios. 
 	 */
