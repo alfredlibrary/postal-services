@@ -10,6 +10,12 @@ At this moment, this API is integrated with Brazilian Postal Services (Correios 
 packages sent using Correios, you will only need the Tracking Code. If you need to use USPS, then you must do your registration at USPS site and get your UserID.
 Look at the examples below to know how to use our API. 
 
+Installation
+----------
+Soon! :) 
+TODO: Using Maven or attach our library to your project.
+
+
 Usage
 ------
 How to use it? To track your package using USPS, it's simple like that:
