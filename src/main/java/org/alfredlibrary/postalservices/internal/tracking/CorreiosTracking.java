@@ -38,10 +38,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation to get tracking informations of packages coming from Brazil.<br>
- * This implementation uses 'web scraping' (http://en.wikipedia.org/wiki/Web_scraping) <br>
+ * 
+ * This implementation uses 'web scraping' (http://en.wikipedia.org/wiki/Web_scraping)
  * to get data from http://www.correios.com.br/.<br>
  * 
- * No API is provided by the brazillian Postal Service called Correios :-(
+ * No API is provided by the brazillian Postal Service. :-(
  * 
  * @author Marlon Silva Carvalho
  * @since 2.0.0

@@ -29,7 +29,7 @@ import java.io.Serializable;
 public interface Tracking extends Serializable {
 
 	/**
-	 * Get tracking statuses.
+	 * Get tracking statuses and general informations.
 	 * 
 	 * @param code Tracking code.
 	 * @return Tracking informations.
