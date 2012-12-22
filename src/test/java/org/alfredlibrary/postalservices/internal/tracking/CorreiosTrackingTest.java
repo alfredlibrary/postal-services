@@ -60,9 +60,8 @@ public class CorreiosTrackingTest {
 
 	@Test
 	public void testSuccessCode() {
-		TrackingInfo info = tracking.track("RM050887654IN");
-		Assert.assertEquals("AC CONCHAS - CONCHAS/SP", info.getStatuses().get(0).getCity());
-		Assert.assertEquals("Entregue", info.getStatuses().get(0).getDescription());
+		TrackingInfo info = tracking.track("pg185440520br");
+		Assert.assertNotNull(info);
 	}
 
 }

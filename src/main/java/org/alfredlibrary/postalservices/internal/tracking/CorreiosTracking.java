@@ -32,12 +32,13 @@ import org.alfredlibrary.postalservices.tracking.exception.IncorrectTrackingCode
 import org.alfredlibrary.postalservices.tracking.exception.NullOrEmptyTrackingCodeException;
 import org.alfredlibrary.postalservices.tracking.exception.TrackingException;
 import org.alfredlibrary.postalservices.tracking.exception.TrackingNotFoundException;
+import org.alfredlibrary.postalservices.util.Strings;
 import org.alfredlibrary.validation.internal.validator.TrackingValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default implementation to get tracking informations of packages coming from Brazil.<br>
+ * Tracking Informations from Correios (Brazil).<br>
  * 
  * This implementation uses 'web scraping' (http://en.wikipedia.org/wiki/Web_scraping)
  * to get data from http://www.correios.com.br/.<br>
@@ -49,12 +50,13 @@ import org.slf4j.LoggerFactory;
  */
 public class CorreiosTracking implements Tracking {
 	private static final long serialVersionUID = 1L;
+	private static final Pattern localePattern = Pattern.compile("(((.+)-)|(.+)) (.+)/(\\w{2})$");
 	private Logger logger = LoggerFactory.getLogger(CorreiosTracking.class);
 
 	@Override
 	public TrackingInfo track(final String code) {
 
-		logger.debug("starting tracking of the code " + code);
+		logger.debug("starting tracking code " + code);
 		validate(code);
 		logger.debug("asking Correios about the code.");
 
@@ -110,8 +112,8 @@ public class CorreiosTracking implements Tracking {
 
 		}
 		if (location != null) {
-			status.setCity(location.trim());
-			status.setState(location.trim());
+			getLocation(status, location);
+			status.setCountry("Brasil");
 		}
 		if (description != null) {
 			status.setDescription(description.trim());
@@ -120,6 +122,32 @@ public class CorreiosTracking implements Tracking {
 			status.setDetails(details.trim());
 		}
 		return status;
+	}
+
+	private String applyReplacements(final String text) {
+		String result = null;
+
+		if (text != null) {
+			result = new String(text);
+
+			result = result.replace("UNIDADE DE TRATAMENTO INTERNACIONAL - BRASIL", "Unidade de Tratamento Internacional - Brasil");
+			result = result.replace("FISCALIZACAO ADUANEIRA", "Fiscalização Aduaneira");
+			result = result.replace("TRIBUTADO-EMISSÃO NOTA TRIBUTACAO/BR", "Tributado-Emissão Nota Tributação/BR");
+			result = result.replace("ENTREPOSTO", "entreposto");
+		}
+
+		return result;
+	}
+
+	private void getLocation(Status status, String location) {
+		String text = location.replaceAll(" +", " ").trim();
+		Matcher matcher = localePattern.matcher(text == null ? "" : text);
+
+		if (matcher.matches()) {
+			status.setCity(applyReplacements(Strings.firstToUpper(matcher.group(5).trim())));
+			status.setState(matcher.group(6).trim());
+		}
+
 	}
 
 	/**
