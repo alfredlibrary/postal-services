@@ -25,7 +25,7 @@ import org.alfredlibrary.postalservices.internal.tracking.USPSTracking;
  * Create instances of {@link Tracking}. <br>
  * 
  * If you don't use CDI, then use this factory to get instances of {@link Tracking}. <br>
- * If you're using CDI, then use the @Inject and our qualifiers (@USPS, @Correios and so on).
+ * If you're using CDI, then use the @Inject and our qualifiers (@USPS, @Correios, etc).
  * 
  * @author Marlon Silva Carvalho
  * @since 2.0.0

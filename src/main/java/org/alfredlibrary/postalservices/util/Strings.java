@@ -2,6 +2,10 @@ package org.alfredlibrary.postalservices.util;
 
 public class Strings {
 
+	public static boolean isEmpty(final String string) {
+		return string == null || string.trim().length() == 0;
+	}
+
 	public static String firstToUpper(final String string) {
 		StringBuffer buffer = new StringBuffer();
 

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.alfredlibrary.postalservices.tracking.Tracking;
 import org.alfredlibrary.postalservices.tracking.TrackingInfo;
 import org.alfredlibrary.postalservices.tracking.exception.TrackingException;
 import org.alfredlibrary.postalservices.tracking.exception.TrackingNotFoundException;
+import org.alfredlibrary.postalservices.util.Strings;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
@@ -122,6 +124,7 @@ public class USPSTracking implements Tracking {
 		try {
 			final Serializer serializer = new Persister();
 			final TrackResponse trackingResponse = serializer.read(TrackResponse.class, content);
+			statuses.add(getStatusFromSummary(trackingResponse.getTrackInfo().getTrackSummary()));
 			for (final TrackDetail detail : trackingResponse.getTrackInfo().getTrackDetails()) {
 				final Status status = new Status();
 				status.setDescription(detail.getEvent());
@@ -131,16 +134,46 @@ public class USPSTracking implements Tracking {
 				status.setZipCode(detail.getEventZIPCode());
 				status.setDetails("");
 
-				final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa", Locale.US);
-				status.setDate(simpleDateFormat.parse(detail.getEventDate() + " " + detail.getEventTime()));
+				if (!Strings.isEmpty(detail.getEventTime()) && !Strings.isEmpty(detail.getEventDate())) {
+					final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa", Locale.US);
+					status.setDate(simpleDateFormat.parse(detail.getEventDate() + " " + detail.getEventTime()));
+				} else if (!Strings.isEmpty(detail.getEventDate())) {
+					final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
+					status.setDate(simpleDateFormat.parse(detail.getEventDate()));
+				} else {
+					status.setDate(null);
+				}
 
 				statuses.add(status);
 			}
+
 		} catch (Exception e) {
 			throw new TrackingException(e);
 		}
 
 		return statuses;
+	}
+
+	private Status getStatusFromSummary(TrackSummary summary) throws ParseException {
+		final Status status = new Status();
+		status.setDescription(summary.getEvent());
+		status.setCity(summary.getEventCity());
+		status.setState(summary.getEventState());
+		status.setCountry(summary.getEventCountry());
+		status.setZipCode(summary.getEventZIPCode());
+		status.setDetails("");
+
+		if (!Strings.isEmpty(summary.getEventTime()) && !Strings.isEmpty(summary.getEventDate())) {
+			final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa", Locale.US);
+			status.setDate(simpleDateFormat.parse(summary.getEventDate() + " " + summary.getEventTime()));
+		} else if (!Strings.isEmpty(summary.getEventDate())) {
+			final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
+			status.setDate(simpleDateFormat.parse(summary.getEventDate()));
+		} else {
+			status.setDate(null);
+		}
+
+		return status;
 	}
 
 	private void checkExists(final String content) {
