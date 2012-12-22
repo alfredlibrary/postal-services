@@ -1,13 +1,16 @@
 package org.alfredlibrary.postalservices.internal.tracking;
 
+import junit.framework.Assert;
+
 import org.alfredlibrary.postalservices.tracking.TrackingFactory;
+import org.alfredlibrary.postalservices.tracking.TrackingInfo;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * Test class for USPSTracking.
  * 
- * @author Marlon
+ * @author Marlon Silva Carvalho
  * @since 2.0.0
  */
 public class USPSTrackingTest {
@@ -16,12 +19,13 @@ public class USPSTrackingTest {
 
 	@Before
 	public void before() {
-		tracking = (USPSTracking) TrackingFactory.getUSPS("146SERPR6292", true);
+		tracking = (USPSTracking) TrackingFactory.getUSPS("", true);
 	}
 
 	@Test
 	public void success() {
-		tracking.track("EJ958088694US");
+		TrackingInfo info = tracking.track("EJ958088694US");
+		Assert.assertNotNull(info);
 	}
 
 }
